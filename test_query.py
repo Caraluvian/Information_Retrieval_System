@@ -35,26 +35,26 @@ def test_query(file="topics_MB1-49.txt"):
     # Search 49 test queries, compute similarity and get top1000 ranked docs
     docID_ls = []
     word_ls = []
-    num = 0
-    #if os.path.exists("Results.txt"):
-    #   os.remove("Results.txt")
-    print("Starting inserting top1000 ranked docs...")
+    if os.path.exists("docID_1000.txt"):
+        os.remove("docID_1000.txt")
+    if os.path.exists("wordlist_1000.txt"):
+        os.remove("wordlist_1000.txt")
+    print("Start creating docID_1000.txt and wordlist_1000.txt...")
     for x in range(len(title_ls)):
         similarity_sorted, ranked_docs = rr.retrieval_ranking(title_ls[x])
         # Write top1000 ranked docs into Results.txt
         limit = 1
         for y in range(len(ranked_docs)):
-            num += 1
-            print(f"Writing document no.{num}")
-            with open("docID_1000.txt", "a+", encoding='UTF-8-sig') as file1:
-                file1.write(f"{ranked_docs[y]}\n")
-            with open("wordlist_1000.txt", "a+", encoding='UTF-8-sig') as file2:
-                file2.write(f"{doc_dict[ranked_docs[y]]}\n")
-            #docID_ls.append(ranked_docs[y])
-            #word_ls.append(doc_dict[ranked_docs[y]])
+            docID_ls.append(ranked_docs[y])
+            word_ls.append(doc_dict[ranked_docs[y]])
             if limit == 1000:
                 break
             limit += 1
+    # Created docID_1000.txt
+    with open("docID_1000.txt", "a+", encoding='UTF-8-sig') as file1:
+        file1.write(docID_ls)
+    # Created wordlist_1000.txt
+    with open("wordlist_1000.txt", "a+", encoding='UTF-8-sig') as file2:
+        file2.write(word_ls)
 
-    #return docID_ls, word_ls
     print("Finished!")

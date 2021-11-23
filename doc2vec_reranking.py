@@ -1,10 +1,10 @@
-import json
+from gensim.models.doc2vec import Doc2Vec, TaggedDocument
+
 def doc2vec_reranking(file1="docID_1000.txt", file2="wordlist_1000.txt"):
-    # Using readlines()
-    docID_file = open(file1, "r", encoding='UTF-8-sig').read()
-    wordlist_file = open(file2, "r", encoding='UTF-8-sig').read()
-    docID_ls = [i.strip()[1:-1] for i in docID_file[1:-1].split(',')]
-    word_ls = [i.strip()[1:-1] for i in wordlist_file[1:-1].split(',')]
+    # Get docID_ls and word_ls
+    docID_ls = eval(open(file1, "r", encoding='UTF-8-sig').read())
+    word_ls = eval(open(file2, "r", encoding='UTF-8-sig').read())
 
-    return word_ls
+    tagged_data = [TaggedDocument(d, [i]) for i, d in enumerate(word_ls)]
 
+    return tagged_data
