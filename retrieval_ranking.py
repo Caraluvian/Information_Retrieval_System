@@ -3,10 +3,9 @@ import indexer
 import numpy as np
 import math
 
-def retrieval_ranking(query, inverted_index=indexer.indexing_tokens()):
+def retrieval_ranking(query_ls, inverted_index=indexer.indexing_tokens()):
     
-    query_index, doc_list = query_indexing(inverted_index, query)
-    query_ls = query_list(query)
+    query_index, doc_list = query_indexing(inverted_index, query_ls)
     # Log tf-idf weighting in query matrix
     matrix_q = np.zeros(shape=(len(query_ls), len(doc_list)+1))
     for x in range(len(query_ls)):
@@ -45,9 +44,9 @@ def retrieval_ranking(query, inverted_index=indexer.indexing_tokens()):
     return similarity_sorted, ranked_docs
 
 
+#{"bbc":{"123456":1,"234567":1}, "cuts":{"467903":1}}
 
-def query_indexing(inverted_index, query):
-    query_ls = query_list(query)
+def query_indexing(inverted_index, query_ls):
     query_index =  {}
     doc_num = 0
     doc_list = []
@@ -58,23 +57,6 @@ def query_indexing(inverted_index, query):
             doc_list = doc_list + list(query_index[keyword].keys())
     
     return query_index, doc_list
-
-def query_list(query):
-    # Stopword list
-    stopword_lines = open("StopWords.txt", "r", encoding='UTF-8-sig').readlines()
-    stopword_ls = []
-    for line in stopword_lines:
-        stopword_ls.append(line.strip())
-    # Query tokenization
-    query_ls = query.split()
-    for i in range(len(query_ls)):
-        query_ls[i] = tweet.lowercase_text(query_ls[i])
-        query_ls[i] = tweet.remove_punctuations(query_ls[i])
-        query_ls[i] = tweet.remove_number(query_ls[i])
-        query_ls[i] = tweet.remove_stopword(query_ls[i], stopword_ls)
-    query_ls = [string for string in query_ls if string != ""]
-
-    return query_ls
 
 def tf_ij_weight(query_index, i, j):
     '''
@@ -106,7 +88,7 @@ def tf_iq_weight(query_ls, i):
 def idf_weight(query_index, i):
     '''Formula: idf_i = log(N/df_i)'''
 
-    N = len(open("Trec_microblog11.txt", "r", encoding='UTF-8-sig').readlines())
+    N = 45899
     df_i = len(query_index[i])
     idf_i = math.log((N/df_i), 10)
 

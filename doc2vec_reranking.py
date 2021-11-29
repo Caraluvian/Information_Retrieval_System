@@ -38,9 +38,9 @@ def doc2vec_reranking(file1="docID_1000.txt", file2="wordlist_1000.txt", file3="
 
     for i in range(len(title_ls)):
 
-        document = word_ls[1000*i:1000*(i+1)]
-        #print(document)
-        tagged_doc = [TaggedDocument(d, [i]) for i, d in enumerate(word_ls)]
+        document = word_ls[i]
+        print(len(document))
+        tagged_doc = [TaggedDocument(d, [i]) for i, d in enumerate(document)]
 
         ## Train doc2vec model
         model = Doc2Vec(tagged_doc, vector_size=5, window=2, min_count=20, negative=0, workers=6, dm=1, epochs=10, alpha=0.025)
@@ -55,5 +55,8 @@ def doc2vec_reranking(file1="docID_1000.txt", file2="wordlist_1000.txt", file3="
 
         for j in range(len(reranked_list)):
             with open("doc2vec_results.txt", "a") as file:
-                file.write(f"{topicId_ls[i]} Q0 {docID_ls[reranked_list[j][0]]} {j+1} {int(reranked_list[j][1]*1000)/1000} myRun\n")
+                file.write(f"{topicId_ls[i]} Q0 {docID_ls[i][reranked_list[j][0]]} {j+1} {int(reranked_list[j][1]*1000)/1000} myRun\n")
     print("Finished!")
+
+if __name__ == '__main__':
+    doc2vec_reranking()
