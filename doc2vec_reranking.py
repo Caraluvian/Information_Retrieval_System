@@ -34,7 +34,7 @@ def doc2vec_reranking(file1="docID_1000.txt", file2="wordlist_1000.txt", file3="
     # Search 49 test queries, compute similarity and get top1000 ranked docs
     if os.path.exists("doc2vec_results.txt"):
         os.remove("doc2vec_results.txt")
-    print("Starting inserting top1000 ranked docs...")
+    print("Start inserting top1000 ranked docs...")
 
     for i in range(len(title_ls)):
 
@@ -43,7 +43,7 @@ def doc2vec_reranking(file1="docID_1000.txt", file2="wordlist_1000.txt", file3="
         tagged_doc = [TaggedDocument(d, [i]) for i, d in enumerate(document)]
 
         ## Train doc2vec model
-        model = Doc2Vec(tagged_doc, vector_size=5, window=2, min_count=20, negative=0, workers=6, dm=1, epochs=10, alpha=0.025)
+        model = Doc2Vec(tagged_doc, vector_size=5, window=5, min_count=10, negative=0, workers=6, dm=1, epochs=10, alpha=0.025)
         # Save trained doc2vec model
         model.save("test_doc2vec.model")
         ## Load saved doc2vec model

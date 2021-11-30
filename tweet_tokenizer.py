@@ -56,7 +56,7 @@ def remove_number(word):
     return new_word
 
 def remove_stopword(word, stopword_ls):
-    if word in stopword_ls:
+    if word in stopword_ls or "http" in word:
         return ""
     else:
         return word
