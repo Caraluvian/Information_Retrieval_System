@@ -29,7 +29,7 @@ def query_list(query):
 
     return query_ls
 
-def test_query(file="topics_MB1-49.txt"):
+def test_query(synonym_words=[], file="topics_MB1-49.txt"):
 
     # Create a doc dictionary with docID as key and word list as value
     doc_dict = dict_convertor()
@@ -80,42 +80,68 @@ def test_query(file="topics_MB1-49.txt"):
     # Search 49 test queries, compute similarity and get top1000 ranked docs
     docID_ls = []
     word_ls = []
-    if os.path.exists("docID_1000.txt"):
-        os.remove("docID_1000.txt")
-    if os.path.exists("wordlist_1000.txt"):
-        os.remove("wordlist_1000.txt")
-    print("Start creating docID_1000.txt and wordlist_1000.txt...")
-    for x in range(len(title_ls)):
-        query_ls = query_list(title_ls[x])
-        similarity_sorted, ranked_docs = rr.retrieval_ranking(query_ls)
-        
-        for id in ranked_docs[:5]:    
-            new_query = query_ls + doc_dict[id]
+    
+    # only tf-idf
+    if synonym_words == []:
+        if os.path.exists("docID_1000.txt"):
+            os.remove("docID_1000.txt")
+        if os.path.exists("wordlist_1000.txt"):
+            os.remove("wordlist_1000.txt")
+        print("Start creating docID_1000.txt and wordlist_1000.txt...")
 
-        new_query = list(dict.fromkeys(new_query))
-        similarity_sorted, ranked_docs = rr.retrieval_ranking(new_query)
+        for x in range(len(title_ls)):
+            query_ls = query_list(title_ls[x])
+            similarity_sorted, ranked_docs = rr.retrieval_ranking(query_ls)
+            
+            for id in ranked_docs[:5]:    
+                new_query = query_ls + doc_dict[id]
 
-        # Write top1000 ranked docs into Results.txt
-        docID_ls_tmp = []
-        word_ls_tmp = []
-        limit = 1
-        for y in range(len(ranked_docs)):
-            docID_ls_tmp.append(ranked_docs[y])
-            word_ls_tmp.append(doc_dict[ranked_docs[y]])
-            if limit == 1000:
-                break
-            limit += 1
-        docID_ls.append(docID_ls_tmp)
-        word_ls.append(word_ls_tmp)
+            new_query = list(dict.fromkeys(new_query))
+            similarity_sorted, ranked_docs = rr.retrieval_ranking(new_query)
 
-    # Created docID_1000.txt
-    with open("docID_1000.txt", "a+", encoding='UTF-8-sig') as file1:
-        file1.write(f"{docID_ls}")
-    # Created wordlist_1000.txt
-    with open("wordlist_1000.txt", "a+", encoding='UTF-8-sig') as file2:
-        file2.write(f"{word_ls}")
+            # Write top1000 ranked docs into docID_1000.txt and wordlist_1000.txt
+            docID_ls_tmp = []
+            word_ls_tmp = []
+            limit = 1
+            for y in range(len(ranked_docs)):
+                docID_ls_tmp.append(ranked_docs[y])
+                word_ls_tmp.append(doc_dict[ranked_docs[y]])
+                if limit == 1000:
+                    break
+                limit += 1
+            docID_ls.append(docID_ls_tmp)
+            word_ls.append(word_ls_tmp)
 
-    print("File writing finished!")
+        # Created docID_1000.txt
+        with open("docID_1000.txt", "a+", encoding='UTF-8-sig') as file1:
+            file1.write(f"{docID_ls}")
+        # Created wordlist_1000.txt
+        with open("wordlist_1000.txt", "a+", encoding='UTF-8-sig') as file2:
+            file2.write(f"{word_ls}")
+
+        print("Finished writing docID_1000.txt and wordlist_1000.txt!")
+
+    # tf-idf + word2vec
+    else:
+        if os.path.exists("word2vec_results.txt"):
+            os.remove("word2vec_results.txt")
+        print("Start creating word2vec_results...")
+        for x in range(len(title_ls)):
+            query_ls = query_list(title_ls[x])
+            new_query_ls = query_ls + synonym_words[x]
+            similarity_sorted, ranked_docs = rr.retrieval_ranking(new_query_ls)
+
+            # Write top1000 ranked docs into word2vec_results.txt
+            limit = 1
+            for y in range(len(ranked_docs)):
+            
+                with open("word2vec_results.txt", "a") as file:
+                    file.write(f"{topicId_ls[x]} Q0 {ranked_docs[y]} {limit} {int(similarity_sorted[y][1]*1000)/1000} myRun\n")
+                if limit == 1000:
+                    break
+                limit += 1
+
+        print("Finished writing word2vec_results.txt!")
 
 if __name__ == '__main__':
     test_query()
