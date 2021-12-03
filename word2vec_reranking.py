@@ -1,10 +1,9 @@
-import os
 import gensim
 import test_query
 from test_query import query_list
 from bs4 import BeautifulSoup
 from collections import Counter
-from gensim.models import word2vec, Word2Vec
+from gensim.models import Word2Vec
 
 def word2vec_reranking (file1="docID_1000.txt", file2="wordlist_1000.txt", file3="topics_MB1-49.txt"):
 
@@ -43,9 +42,6 @@ def word2vec_reranking (file1="docID_1000.txt", file2="wordlist_1000.txt", file3
         #sentences = [['first', 'sentence'], ['second', 'sentence']]
         
         model = Word2Vec(sentences, min_count=2)
-        model.save('word2vec.model')
-        model.save('word2vec.bin')
-        model = Word2Vec.load('word2vec.model')
         
         # Convert query string to query list (tokenized)
         query_ls = query_list(title_ls[i])
